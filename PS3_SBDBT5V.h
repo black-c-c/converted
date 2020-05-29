@@ -31,10 +31,22 @@ public:
     };
     
     enum{
-        HIGH = -3,
-        MIDDLE,
-        LOW,
-        NEUTRAL
+        L_HIGH = -3,
+        L_MIDDLE,
+        L_LOW,
+        NEUTRAL,
+        R_LOW,
+        R_MIDDLE,
+        R_HIGH
+    };
+    
+    enum{
+        U_HIGH = -3,
+        U_MIDDLE,
+        U_LOW,
+        D_LOW = 1,
+        D_MIDDLE,
+        D_HIGH
     };
     
     PS3(PinName tx, PinName rx);
