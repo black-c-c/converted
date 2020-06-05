@@ -57,7 +57,6 @@ public:
     
     int result[MAX_BUTTON];
     
-    //int get_result();
     int get_data();
     int get_analog(int analog);
     
@@ -69,9 +68,9 @@ private:
     int i;
     int j;
     int check;
-    int check2;
     int data[8];
     int FREE[8];
+    void initialization();
     void reference();
     
 };

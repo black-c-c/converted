@@ -4,30 +4,12 @@
 PS3::PS3(PinName tx, PinName rx)
     : _serial_p(new Serial(tx, rx)), _serial(*_serial_p)
 {
-    _serial.baud(2400);
-    FREE[0] = 0x80;
-    FREE[1] = 0x00;
-    FREE[2] = 0x00;
-    FREE[3] = 0x40;
-    FREE[4] = 0x40;
-    FREE[5] = 0x40;
-    FREE[6] = 0x40;
-    FREE[7] = 0x00;
-    check2 = 0;
+    initialization();
 }
 
 PS3::PS3(Serial &serial_obj) : _serial_p(NULL), _serial(serial_obj)
 {
-    _serial.baud(2400);
-    FREE[0] = 0x80;
-    FREE[1] = 0x00;
-    FREE[2] = 0x00;
-    FREE[3] = 0x40;
-    FREE[4] = 0x40;
-    FREE[5] = 0x40;
-    FREE[6] = 0x40;
-    FREE[7] = 0x00;
-    check2 = 0;
+    initialization();
 }
 
 PS3::~PS3()
@@ -35,13 +17,29 @@ PS3::~PS3()
     delete _serial_p;
 }
 
+void PS3::initialization()
+{
+    _serial.baud(2400);
+    FREE[0] = 0x80;
+    FREE[1] = 0x00;
+    FREE[2] = 0x00;
+    FREE[3] = 0x40;
+    FREE[4] = 0x40;
+    FREE[5] = 0x40;
+    FREE[6] = 0x40;
+    FREE[7] = 0x00;
+    for(i=0; i<8; i++){
+        data[i] = FREE[i];
+    }
+    check = 0;
+    
+}
+
 int PS3::get_data()
 {
-    check = 0;
     j = 0;
     if(_serial.readable()) {
         check = 1;
-        check2 = 1;
         for(i=0; i<8; i++) {
             data[i] = _serial.getc();
             if(data[i] == FREE[i]){
@@ -49,13 +47,15 @@ int PS3::get_data()
             }
         }
         if(j == 8){
+            
             return -1;
         }else{
             reference();
+            return 1;        
         }
-        
+    }else{
+        return 0;
     }
-    return check;
 }
 
 void PS3::reference()
@@ -139,7 +139,7 @@ void PS3::reference()
 }
 
 int PS3::get_analog(int analog){
-    if(check2 == 0){
+    if(check == 0){
         return 0x40;
     }else{
         return data[analog-11];
