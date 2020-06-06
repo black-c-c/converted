@@ -47,7 +47,6 @@ int PS3::get_data()
             }
         }
         if(j == 8){
-            
             return -1;
         }else{
             reference();
