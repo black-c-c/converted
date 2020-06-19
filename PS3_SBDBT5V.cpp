@@ -75,65 +75,65 @@ void PS3::reference()
     if(data[3] == 0x40){                                // 左アナログスティック左右
         result[LEFT_ANALOG_Y] = NEUTRAL;
     }else if( (data[3] < 0x40)&&(data[3] >= 0x20) ){
-        result[LEFT_ANALOG_Y] = L_LOW;
+        result[LEFT_ANALOG_Y] = U_LOW;
     }else if( (data[3] < 0x20)&&(data[3] >= 0x10) ){
-        result[LEFT_ANALOG_Y] = L_MIDDLE;
+        result[LEFT_ANALOG_Y] = U_MIDDLE;
     }else if( (data[3] < 0x10)&&(data[3] >= 0x00) ){
-        result[LEFT_ANALOG_Y] = L_HIGH;
+        result[LEFT_ANALOG_Y] = U_HIGH;
     }else if( (data[3] <= 0x60)&&(data[3] > 0x40) ){
-        result[LEFT_ANALOG_Y] = R_LOW;
+        result[LEFT_ANALOG_Y] = D_LOW;
     }else if( (data[3] <= 0x70)&&(data[3] > 0x60) ){
-        result[LEFT_ANALOG_Y] = R_MIDDLE;
+        result[LEFT_ANALOG_Y] = D_MIDDLE;
     }else if( (data[3] < 0x80)&&(data[3] > 0x70) ){
-        result[LEFT_ANALOG_Y] = R_HIGH;
+        result[LEFT_ANALOG_Y] = D_HIGH;
     }
     
     if(data[4] == 0x40){                                // 左アナログスティック上下
         result[LEFT_ANALOG_X] = NEUTRAL;
     }else if( (data[4] < 0x40)&&(data[4] >= 0x20) ){
-        result[LEFT_ANALOG_X] = U_LOW;
+        result[LEFT_ANALOG_X] = L_LOW;
     }else if( (data[4] < 0x20)&&(data[4] >= 0x10) ){
-        result[LEFT_ANALOG_X] = U_MIDDLE;
+        result[LEFT_ANALOG_X] = L_MIDDLE;
     }else if( (data[4] < 0x10)&&(data[4] >= 0x00) ){
-        result[LEFT_ANALOG_X] = U_HIGH;
+        result[LEFT_ANALOG_X] = L_HIGH;
     }else if( (data[4] <= 0x60)&&(data[4] > 0x40) ){
-        result[LEFT_ANALOG_X] = D_LOW;
+        result[LEFT_ANALOG_X] = R_LOW;
     }else if( (data[4] <= 0x70)&&(data[4] > 0x60) ){
-        result[LEFT_ANALOG_X] = D_MIDDLE;
+        result[LEFT_ANALOG_X] = R_MIDDLE;
     }else if( (data[4] < 0x80)&&(data[4] > 0x70) ){
-        result[LEFT_ANALOG_X] = D_HIGH;
+        result[LEFT_ANALOG_X] = R_HIGH;
     }
     
     if(data[5] == 0x40){                                // 右アナログスティック左右
         result[RIGHT_ANALOG_Y] = NEUTRAL;
     }else if( (data[5] < 0x40)&&(data[5] >= 0x20) ){
-        result[RIGHT_ANALOG_Y] = L_LOW;
+        result[RIGHT_ANALOG_Y] = U_LOW;
     }else if( (data[5] < 0x20)&&(data[5] >= 0x10) ){
-        result[RIGHT_ANALOG_Y] = L_MIDDLE;
+        result[RIGHT_ANALOG_Y] = U_MIDDLE;
     }else if( (data[5] < 0x10)&&(data[5] >= 0x00) ){
-        result[RIGHT_ANALOG_Y] = L_HIGH;
+        result[RIGHT_ANALOG_Y] = U_HIGH;
     }else if( (data[5] <= 0x60)&&(data[5] > 0x40) ){
-        result[RIGHT_ANALOG_Y] = R_LOW;
+        result[RIGHT_ANALOG_Y] = D_LOW;
     }else if( (data[5] <= 0x70)&&(data[5] > 0x60) ){
-        result[RIGHT_ANALOG_Y] = R_MIDDLE;
+        result[RIGHT_ANALOG_Y] = D_MIDDLE;
     }else if( (data[5] < 0x80)&&(data[5] > 0x70) ){
-        result[RIGHT_ANALOG_Y] = R_HIGH;
+        result[RIGHT_ANALOG_Y] = D_HIGH;
     }
     
     if(data[6] == 0x40){                                // 右アナログスティック上下
         result[RIGHT_ANALOG_X] = NEUTRAL;
     }else if( (data[6] < 0x40)&&(data[6] >= 0x20) ){
-        result[RIGHT_ANALOG_X] = U_LOW;
+        result[RIGHT_ANALOG_X] = L_LOW;
     }else if( (data[6] < 0x20)&&(data[6] >= 0x10) ){
-        result[RIGHT_ANALOG_X] = U_MIDDLE;
+        result[RIGHT_ANALOG_X] = L_MIDDLE;
     }else if( (data[6] < 0x10)&&(data[6] >= 0x00) ){
-        result[RIGHT_ANALOG_X] = U_HIGH;
+        result[RIGHT_ANALOG_X] = L_HIGH;
     }else if( (data[6] <= 0x60)&&(data[6] > 0x40) ){
-        result[RIGHT_ANALOG_X] = D_LOW;
+        result[RIGHT_ANALOG_X] = R_LOW;
     }else if( (data[6] <= 0x70)&&(data[6] > 0x60) ){
-        result[RIGHT_ANALOG_X] = D_MIDDLE;
+        result[RIGHT_ANALOG_X] = R_MIDDLE;
     }else if( (data[6] < 0x80)&&(data[6] > 0x70) ){
-        result[RIGHT_ANALOG_X] = D_HIGH;
+        result[RIGHT_ANALOG_X] = R_HIGH;
     }
 }
 
