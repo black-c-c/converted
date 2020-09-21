@@ -1,25 +1,14 @@
 #include "mbed.h"
 #include "PS3_SBDBT5V.h"
 
-PS3::PS3(PinName tx, PinName rx)
-    : _serial_p(new Serial(tx, rx)), _serial(*_serial_p)
+PS3::PS3(PinName rx, int baud)
+    : Serial(NC, rx, baud)
 {
     initialization();
-}
-
-PS3::PS3(Serial &serial_obj) : _serial_p(NULL), _serial(serial_obj)
-{
-    initialization();
-}
-
-PS3::~PS3()
-{
-    delete _serial_p;
 }
 
 void PS3::initialization()
 {
-    _serial.baud(2400);
     FREE[0] = 0x80;
     FREE[1] = 0x00;
     FREE[2] = 0x00;
@@ -28,119 +17,127 @@ void PS3::initialization()
     FREE[5] = 0x40;
     FREE[6] = 0x40;
     FREE[7] = 0x00;
-    for(i=0; i<8; i++){
-        data[i] = FREE[i];
+    for(i=0; i<8; i++) {
+        ps3_data[i] = FREE[i];
     }
     check = 0;
-    
+
 }
 
-int PS3::get_data()
+int PS3::get_data(int data_p[MAX_BUTTON])
 {
     j = 0;
-    if(_serial.readable()) {
+    if(readable()) {
         check = 1;
         for(i=0; i<8; i++) {
-            data[i] = _serial.getc();
-            if(data[i] == FREE[i]){
+#if MBED_MAJOR_VERSION >= 6
+            read(&ps3_data[i], 1);
+#else
+            ps3_data[i] = getc();
+#endif
+            if(ps3_data[i] == FREE[i]) {
                 j++;
             }
         }
-        if(j == 8){
+        if(j == 8) {
             return -1;
-        }else{
+        } else {
             reference();
-            return 1;        
+            for(i=0; i<MAX_BUTTON; i++) {
+                data_p[i] = ps3_data[i];
+            }
+            return 1;
         }
-    }else{
+    } else {
         return 0;
     }
 }
 
 void PS3::reference()
 {
-    result[UP]       = (data[2] & 0x01)?1:0;
-    result[DOWN]     = (data[2] & 0x02)?1:0;
-    result[RIGHT]    = (data[2] & 0x04)?1:0;
-    result[LEFT]     = (data[2] & 0x08)?1:0;
-    result[TRIANGLE] = (data[2] & 0x10)?1:0;
-    result[CROSS]    = (data[2] & 0x20)?1:0;
-    result[CIRCLE]   = (data[2] & 0x40)?1:0;
-    result[SQUARE]   = (data[1] & 0x01)?1:0;
-    result[L1]       = (data[1] & 0x02)?1:0;
-    result[L2]       = (data[1] & 0x04)?1:0;
-    result[R1]       = (data[1] & 0x08)?1:0;
-    result[R2]       = (data[1] & 0x10)?1:0;
-    
-    if(data[3] == 0x40){                                // 左アナログスティック左右
+    result[UP]       = (ps3_data[2] & 0x01)?1:0;
+    result[DOWN]     = (ps3_data[2] & 0x02)?1:0;
+    result[RIGHT]    = (ps3_data[2] & 0x04)?1:0;
+    result[LEFT]     = (ps3_data[2] & 0x08)?1:0;
+    result[TRIANGLE] = (ps3_data[2] & 0x10)?1:0;
+    result[CROSS]    = (ps3_data[2] & 0x20)?1:0;
+    result[CIRCLE]   = (ps3_data[2] & 0x40)?1:0;
+    result[SQUARE]   = (ps3_data[1] & 0x01)?1:0;
+    result[L1]       = (ps3_data[1] & 0x02)?1:0;
+    result[L2]       = (ps3_data[1] & 0x04)?1:0;
+    result[R1]       = (ps3_data[1] & 0x08)?1:0;
+    result[R2]       = (ps3_data[1] & 0x10)?1:0;
+
+    if(ps3_data[3] == 0x40) {                               // 左アナログスティック左右
         result[LEFT_ANALOG_Y] = NEUTRAL;
-    }else if( (data[3] < 0x40)&&(data[3] >= 0x20) ){
+    } else if( (ps3_data[3] < 0x40)&&(ps3_data[3] >= 0x20) ) {
         result[LEFT_ANALOG_Y] = U_LOW;
-    }else if( (data[3] < 0x20)&&(data[3] >= 0x10) ){
+    } else if( (ps3_data[3] < 0x20)&&(ps3_data[3] >= 0x10) ) {
         result[LEFT_ANALOG_Y] = U_MIDDLE;
-    }else if( (data[3] < 0x10)&&(data[3] >= 0x00) ){
+    } else if( (ps3_data[3] < 0x10)&&(ps3_data[3] >= 0x00) ) {
         result[LEFT_ANALOG_Y] = U_HIGH;
-    }else if( (data[3] <= 0x60)&&(data[3] > 0x40) ){
+    } else if( (ps3_data[3] <= 0x60)&&(ps3_data[3] > 0x40) ) {
         result[LEFT_ANALOG_Y] = D_LOW;
-    }else if( (data[3] <= 0x70)&&(data[3] > 0x60) ){
+    } else if( (ps3_data[3] <= 0x70)&&(ps3_data[3] > 0x60) ) {
         result[LEFT_ANALOG_Y] = D_MIDDLE;
-    }else if( (data[3] < 0x80)&&(data[3] > 0x70) ){
+    } else if( (ps3_data[3] < 0x80)&&(ps3_data[3] > 0x70) ) {
         result[LEFT_ANALOG_Y] = D_HIGH;
     }
-    
-    if(data[4] == 0x40){                                // 左アナログスティック上下
+
+    if(ps3_data[4] == 0x40) {                               // 左アナログスティック上下
         result[LEFT_ANALOG_X] = NEUTRAL;
-    }else if( (data[4] < 0x40)&&(data[4] >= 0x20) ){
+    } else if( (ps3_data[4] < 0x40)&&(ps3_data[4] >= 0x20) ) {
         result[LEFT_ANALOG_X] = L_LOW;
-    }else if( (data[4] < 0x20)&&(data[4] >= 0x10) ){
+    } else if( (ps3_data[4] < 0x20)&&(ps3_data[4] >= 0x10) ) {
         result[LEFT_ANALOG_X] = L_MIDDLE;
-    }else if( (data[4] < 0x10)&&(data[4] >= 0x00) ){
+    } else if( (ps3_data[4] < 0x10)&&(ps3_data[4] >= 0x00) ) {
         result[LEFT_ANALOG_X] = L_HIGH;
-    }else if( (data[4] <= 0x60)&&(data[4] > 0x40) ){
+    } else if( (ps3_data[4] <= 0x60)&&(ps3_data[4] > 0x40) ) {
         result[LEFT_ANALOG_X] = R_LOW;
-    }else if( (data[4] <= 0x70)&&(data[4] > 0x60) ){
+    } else if( (ps3_data[4] <= 0x70)&&(ps3_data[4] > 0x60) ) {
         result[LEFT_ANALOG_X] = R_MIDDLE;
-    }else if( (data[4] < 0x80)&&(data[4] > 0x70) ){
+    } else if( (ps3_data[4] < 0x80)&&(ps3_data[4] > 0x70) ) {
         result[LEFT_ANALOG_X] = R_HIGH;
     }
-    
-    if(data[5] == 0x40){                                // 右アナログスティック左右
+
+    if(ps3_data[5] == 0x40) {                               // 右アナログスティック左右
         result[RIGHT_ANALOG_Y] = NEUTRAL;
-    }else if( (data[5] < 0x40)&&(data[5] >= 0x20) ){
+    } else if( (ps3_data[5] < 0x40)&&(ps3_data[5] >= 0x20) ) {
         result[RIGHT_ANALOG_Y] = U_LOW;
-    }else if( (data[5] < 0x20)&&(data[5] >= 0x10) ){
+    } else if( (ps3_data[5] < 0x20)&&(ps3_data[5] >= 0x10) ) {
         result[RIGHT_ANALOG_Y] = U_MIDDLE;
-    }else if( (data[5] < 0x10)&&(data[5] >= 0x00) ){
+    } else if( (ps3_data[5] < 0x10)&&(ps3_data[5] >= 0x00) ) {
         result[RIGHT_ANALOG_Y] = U_HIGH;
-    }else if( (data[5] <= 0x60)&&(data[5] > 0x40) ){
+    } else if( (ps3_data[5] <= 0x60)&&(ps3_data[5] > 0x40) ) {
         result[RIGHT_ANALOG_Y] = D_LOW;
-    }else if( (data[5] <= 0x70)&&(data[5] > 0x60) ){
+    } else if( (ps3_data[5] <= 0x70)&&(ps3_data[5] > 0x60) ) {
         result[RIGHT_ANALOG_Y] = D_MIDDLE;
-    }else if( (data[5] < 0x80)&&(data[5] > 0x70) ){
+    } else if( (ps3_data[5] < 0x80)&&(ps3_data[5] > 0x70) ) {
         result[RIGHT_ANALOG_Y] = D_HIGH;
     }
-    
-    if(data[6] == 0x40){                                // 右アナログスティック上下
+
+    if(ps3_data[6] == 0x40) {                               // 右アナログスティック上下
         result[RIGHT_ANALOG_X] = NEUTRAL;
-    }else if( (data[6] < 0x40)&&(data[6] >= 0x20) ){
+    } else if( (ps3_data[6] < 0x40)&&(ps3_data[6] >= 0x20) ) {
         result[RIGHT_ANALOG_X] = L_LOW;
-    }else if( (data[6] < 0x20)&&(data[6] >= 0x10) ){
+    } else if( (ps3_data[6] < 0x20)&&(ps3_data[6] >= 0x10) ) {
         result[RIGHT_ANALOG_X] = L_MIDDLE;
-    }else if( (data[6] < 0x10)&&(data[6] >= 0x00) ){
+    } else if( (ps3_data[6] < 0x10)&&(ps3_data[6] >= 0x00) ) {
         result[RIGHT_ANALOG_X] = L_HIGH;
-    }else if( (data[6] <= 0x60)&&(data[6] > 0x40) ){
+    } else if( (ps3_data[6] <= 0x60)&&(ps3_data[6] > 0x40) ) {
         result[RIGHT_ANALOG_X] = R_LOW;
-    }else if( (data[6] <= 0x70)&&(data[6] > 0x60) ){
+    } else if( (ps3_data[6] <= 0x70)&&(ps3_data[6] > 0x60) ) {
         result[RIGHT_ANALOG_X] = R_MIDDLE;
-    }else if( (data[6] < 0x80)&&(data[6] > 0x70) ){
+    } else if( (ps3_data[6] < 0x80)&&(ps3_data[6] > 0x70) ) {
         result[RIGHT_ANALOG_X] = R_HIGH;
     }
 }
 
-int PS3::get_analog(int analog){
-    if(check == 0){
+int PS3::get_analog(int analog)
+{
+    if(check == 0) {
         return 0x40;
-    }else{
-        return data[analog-11];
+    } else {
+        return ps3_data[analog-11];
     }
 }

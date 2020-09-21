@@ -2,9 +2,13 @@
 #define _PS3_SBDBT5V_H_
 
 #include "mbed.h"
-#include "PS3_SBDBT5V.h"
 
-class PS3
+#if MBED_MAJOR_VERSION >= 6
+class PS3 : public BufferedSerial
+#else
+class PS3 : public Serial
+#endif
+
 {
 public:
     
@@ -49,27 +53,19 @@ public:
         D_HIGH
     };
     
-    PS3(PinName tx, PinName rx);
+    PS3(PinName rx, int baud = 115200);
     
-    PS3(Serial &serial_obj);
-    
-    ~PS3();
-    
-    int result[MAX_BUTTON];
-    
-    int get_data();
+    int get_data(int* data_p);
     int get_analog(int analog);
     
 private:
     
-    Serial *_serial_p;
-    Serial &_serial;
-    
     int i;
     int j;
     int check;
-    int data[8];
     int FREE[8];
+    int ps3_data[8];
+    int result[MAX_BUTTON];
     void initialization();
     void reference();
     
