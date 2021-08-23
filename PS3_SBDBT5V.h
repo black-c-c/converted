@@ -3,12 +3,11 @@
 
 #include "mbed.h"
 
-#if MBED_MAJOR_VERSION >= 6
+/*#if MBED_MAJOR_VERSION >= 6
 class PS3 : public BufferedSerial
-#else
+#else*/
 class PS3 : public Serial
-#endif
-
+//#endif
 {
 public:
     
@@ -53,7 +52,7 @@ public:
         D_HIGH
     };
     
-    PS3(PinName rx, int baud = 115200);
+    PS3(PinName rx, int baud = 2400);
     
     int get_data(int* data_p);
     int get_analog(int analog);

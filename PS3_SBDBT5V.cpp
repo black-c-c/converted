@@ -20,31 +20,32 @@ void PS3::initialization()
     for(i=0; i<8; i++) {
         ps3_data[i] = FREE[i];
     }
-    check = 0;
 
 }
 
-int PS3::get_data(int data_p[MAX_BUTTON])
+int PS3::get_data(int* data_p)
 {
     j = 0;
     if(readable()) {
-        check = 1;
         for(i=0; i<8; i++) {
-#if MBED_MAJOR_VERSION >= 6
+/*#if MBED_MAJOR_VERSION >= 6
             read(&ps3_data[i], 1);
-#else
+//#else*/
             ps3_data[i] = getc();
-#endif
+//#endif
             if(ps3_data[i] == FREE[i]) {
                 j++;
             }
         }
         if(j == 8) {
+            for(i=0; i<MAX_BUTTON; i++) {
+                data_p[i] = 0;
+            }
             return -1;
         } else {
             reference();
             for(i=0; i<MAX_BUTTON; i++) {
-                data_p[i] = ps3_data[i];
+                data_p[i] = result[i];
             }
             return 1;
         }
@@ -67,8 +68,10 @@ void PS3::reference()
     result[L2]       = (ps3_data[1] & 0x04)?1:0;
     result[R1]       = (ps3_data[1] & 0x08)?1:0;
     result[R2]       = (ps3_data[1] & 0x10)?1:0;
+    result[START]    = (ps3_data[2] & 0x03)?1:0;
+    result[SELECT]   = (ps3_data[2] & 0x0c)?1:0;
 
-    if(ps3_data[3] == 0x40) {                               // 左アナログスティック左右
+    if(ps3_data[3] == 0x40) {                               // 左アナログスティック上下
         result[LEFT_ANALOG_Y] = NEUTRAL;
     } else if( (ps3_data[3] < 0x40)&&(ps3_data[3] >= 0x20) ) {
         result[LEFT_ANALOG_Y] = U_LOW;
@@ -84,7 +87,7 @@ void PS3::reference()
         result[LEFT_ANALOG_Y] = D_HIGH;
     }
 
-    if(ps3_data[4] == 0x40) {                               // 左アナログスティック上下
+    if(ps3_data[4] == 0x40) {                               // 左アナログスティック左右
         result[LEFT_ANALOG_X] = NEUTRAL;
     } else if( (ps3_data[4] < 0x40)&&(ps3_data[4] >= 0x20) ) {
         result[LEFT_ANALOG_X] = L_LOW;
@@ -100,7 +103,7 @@ void PS3::reference()
         result[LEFT_ANALOG_X] = R_HIGH;
     }
 
-    if(ps3_data[5] == 0x40) {                               // 右アナログスティック左右
+    if(ps3_data[5] == 0x40) {                               // 右アナログスティック上下
         result[RIGHT_ANALOG_Y] = NEUTRAL;
     } else if( (ps3_data[5] < 0x40)&&(ps3_data[5] >= 0x20) ) {
         result[RIGHT_ANALOG_Y] = U_LOW;
@@ -116,7 +119,7 @@ void PS3::reference()
         result[RIGHT_ANALOG_Y] = D_HIGH;
     }
 
-    if(ps3_data[6] == 0x40) {                               // 右アナログスティック上下
+    if(ps3_data[6] == 0x40) {                               // 右アナログスティック左右
         result[RIGHT_ANALOG_X] = NEUTRAL;
     } else if( (ps3_data[6] < 0x40)&&(ps3_data[6] >= 0x20) ) {
         result[RIGHT_ANALOG_X] = L_LOW;
@@ -135,9 +138,9 @@ void PS3::reference()
 
 int PS3::get_analog(int analog)
 {
-    if(check == 0) {
-        return 0x40;
-    } else {
+    if( (analog > SELECT) && (analog < MAX_BUTTON) ) {
         return ps3_data[analog-11];
+    } else {
+        return -1;
     }
 }
