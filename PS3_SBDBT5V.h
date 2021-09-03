@@ -1,4 +1,4 @@
-// version 2.1 //
+// version 2.2 //
 #ifndef _PS3_SBDBT5V_H_
 #define _PS3_SBDBT5V_H_
 
@@ -27,10 +27,10 @@ public:
         R2,
         START,
         SELECT,
-        LEFT_ANALOG_Y,//14
-        LEFT_ANALOG_X,
-        RIGHT_ANALOG_Y,
+        LEFT_ANALOG_X,//14
+        LEFT_ANALOG_Y,
         RIGHT_ANALOG_X,
+        RIGHT_ANALOG_Y,
         MAX_BUTTON
     };
     
@@ -53,14 +53,13 @@ public:
         D_HIGH
     };
     
-    PS3(PinName rx, int baud = 2400);
+    PS3(PinName rx, int rate = 2400);
     
     int get_data(int* data_p);
-    int get_analog(int analog);
+    void get_analog(int* analog);
     
 private:
     
-    int i;
     int j;
     int check;
     int FREE[8];
