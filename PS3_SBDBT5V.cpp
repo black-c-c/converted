@@ -57,10 +57,26 @@ int PS3::get_data(int* data_p)
 
 void PS3::reference()
 {
-    result[UP]       = (ps3_data[2] & 0x01)?1:0;
-    result[DOWN]     = (ps3_data[2] & 0x02)?1:0;
-    result[RIGHT]    = (ps3_data[2] & 0x04)?1:0;
-    result[LEFT]     = (ps3_data[2] & 0x08)?1:0;
+    if(ps3_data[2] == 0x03){
+        result[START]    = 1;
+        result[UP]       = 0;
+        result[DOWN]     = 0;
+    } else {
+        result[START]    = 0;
+        result[UP]       = (ps3_data[2] & 0x01)?1:0;
+        result[DOWN]     = (ps3_data[2] & 0x02)?1:0;
+    }
+    
+    if(ps3_data[2] == 0x0c){
+        result[SELECT]   = 1;
+        result[RIGHT]    = 0;
+        result[LEFT]     = 0;
+    } else {
+        result[SELECT]   = 0;
+        result[RIGHT]    = (ps3_data[2] & 0x04)?1:0;
+        result[LEFT]     = (ps3_data[2] & 0x08)?1:0;
+    }
+        
     result[TRIANGLE] = (ps3_data[2] & 0x10)?1:0;
     result[CROSS]    = (ps3_data[2] & 0x20)?1:0;
     result[CIRCLE]   = (ps3_data[2] & 0x40)?1:0;
@@ -69,8 +85,6 @@ void PS3::reference()
     result[L2]       = (ps3_data[1] & 0x04)?1:0;
     result[R1]       = (ps3_data[1] & 0x08)?1:0;
     result[R2]       = (ps3_data[1] & 0x10)?1:0;
-    result[START]    = (ps3_data[2] & 0x03)?1:0;
-    result[SELECT]   = (ps3_data[2] & 0x0c)?1:0;
 
     if(ps3_data[3] == 0x40) {                               // 左アナログスティックX軸
         result[LEFT_ANALOG_X] = NEUTRAL;
