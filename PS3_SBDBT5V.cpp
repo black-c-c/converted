@@ -1,4 +1,4 @@
-// version 2.2 //
+// version 2.4 //
 #include "mbed.h"
 #include "PS3_SBDBT5V.h"
 
