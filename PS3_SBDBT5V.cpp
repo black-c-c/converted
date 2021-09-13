@@ -57,22 +57,53 @@ int PS3::get_data(int* data_p)
 
 void PS3::reference()
 {
-    if(ps3_data[2] == 0x03){
+    if(ps3_data[2] == 0x03){            // start
         result[START]    = 1;
+        result[SELECT]   = 0;
         result[UP]       = 0;
         result[DOWN]     = 0;
-    } else {
-        result[START]    = 0;
-        result[UP]       = (ps3_data[2] & 0x01)?1:0;
-        result[DOWN]     = (ps3_data[2] & 0x02)?1:0;
-    }
-    
-    if(ps3_data[2] == 0x0c){
-        result[SELECT]   = 1;
         result[RIGHT]    = 0;
         result[LEFT]     = 0;
-    } else {
+    } else if(ps3_data[2] == 0x07){     // start + right
+        result[START]    = 1;
         result[SELECT]   = 0;
+        result[UP]       = 0;
+        result[DOWN]     = 0;
+        result[RIGHT]    = 1;
+        result[LEFT]     = 0;
+    } else if(ps3_data[2] == 0x0b){     // start + left
+        result[START]    = 1;
+        result[SELECT]   = 0;
+        result[UP]       = 0;
+        result[DOWN]     = 0;
+        result[RIGHT]    = 0;
+        result[LEFT]     = 1;
+    } else if(ps3_data[2] == 0x0c){     // select
+        result[START]    = 0;
+        result[SELECT]   = 1;
+        result[UP]       = 0;
+        result[DOWN]     = 0;
+        result[RIGHT]    = 0;
+        result[LEFT]     = 0;
+    } else if(ps3_data[2] == 0x0d){     // select + up
+        result[START]    = 0;
+        result[SELECT]   = 1;
+        result[UP]       = 1;
+        result[DOWN]     = 0;
+        result[RIGHT]    = 0;
+        result[LEFT]     = 0;
+    } else if(ps3_data[2] == 0x0e){     // select + down
+        result[START]    = 0;
+        result[SELECT]   = 1;
+        result[UP]       = 0;
+        result[DOWN]     = 1;
+        result[RIGHT]    = 0;
+        result[LEFT]     = 0;
+    } else {                            // not pushing start & select
+        result[START]    = 0;
+        result[SELECT]   = 0;
+        result[UP]       = (ps3_data[2] & 0x01)?1:0;
+        result[DOWN]     = (ps3_data[2] & 0x02)?1:0;
         result[RIGHT]    = (ps3_data[2] & 0x04)?1:0;
         result[LEFT]     = (ps3_data[2] & 0x08)?1:0;
     }
