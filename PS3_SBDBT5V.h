@@ -53,12 +53,15 @@ public:
         D_HIGH
     };
     
-    PS3(PinName rx, int rate = 2400);
+    PS3(PinName rx, PinName connect, int rate = 2400);
     
+    int check_connection();
     int get_data(int* data_p);
     void get_analog(int* analog);
     
 private:
+    
+    DigitalIn _connect;
     
     int j;
     int check;

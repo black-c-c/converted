@@ -2,8 +2,8 @@
 #include "mbed.h"
 #include "PS3_SBDBT5V.h"
 
-PS3::PS3(PinName rx, int rate)
-    : Serial(NC, rx, rate)
+PS3::PS3(PinName rx, PinName connect, int rate)
+    : Serial(NC, rx, rate), _connect(connect)
 {
     initialization();
 }
@@ -187,4 +187,9 @@ void PS3::get_analog(int* analog)
     for(int i=0; i<4; i++) {
         analog[i] = ps3_data[i + 3];
     }
+}
+
+int PS3::check_connection()
+{
+    return _connect;
 }
